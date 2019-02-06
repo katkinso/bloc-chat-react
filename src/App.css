@@ -28,11 +28,12 @@ hr.hr-light {
   border-right: 1px solid #434a57; }
 
 .nav-link {
-  color: #ffffff;
+  color: #aaaaaa;
   cursor: pointer; }
 
-.nav-link:hover, .nav-link.active {
-  color: #08b3e2; }
+.nav-link:hover {
+  color: #ffffff; }
 
 .nav-link.active {
+  color: #ffffff;
   background-color: #434a57; }

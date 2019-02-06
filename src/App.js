@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import * as firebase from 'firebase';
-import RoomMessages from './components/RoomMessages';
+import ChatRoom from './components/ChatRoom';
 
 // Initialize Firebase
 var config = {
@@ -28,21 +28,17 @@ class App extends Component {
       activeRoom.key = snapshot.key;
       this.setState({ activeRoom: activeRoom });
     })
-
-
   }
 
   setActiveRoom(room){
     this.setState({ activeRoom: room });
   }
 
-
-
   render() {
     return (
 
       <div className="container-fluid h-100 pl-0">
-          <RoomMessages
+          <ChatRoom
             firebase={firebase}
             setActiveRoom={(room) => this.setActiveRoom(room)}
             activeRoom={this.state.activeRoom}
@@ -54,5 +50,3 @@ class App extends Component {
 }
 
 export default App;
-//           <div className="left-nav h-100 px-3 py-5"><RoomList firebase={firebase} /></div>
-// <div className="flex-fill py-5 px-3"><MessageList firebase={firebase} /></div>
