@@ -58,3 +58,34 @@ hr.hr-light{
   background-color: $very-dark-gray;
 }
 
+img.rounded{
+  border-radius:1.5rem!important;
+  width:3em;
+  height:3em;
+  padding: 3px;
+  // border: 2px solid #9B9B9B;
+}
+
+
+//userinfo
+.navbar {
+  // border-bottom: 1px solid #434A57;
+  // background-color: #434A57;
+}
+.btn.login{
+  border-radius:0.1rem!important;
+}
+
+
+.user-info{
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.user-info .user-subtitle{
+  color: #D7D8D8;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+}

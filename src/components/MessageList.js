@@ -23,15 +23,24 @@ class MessageList extends Component {
     // I know the prop is because passed because I am able to access in the render() method with no problem.
 
     // ** TESTING **
-    // console.log(props.activeRoom.key) -> undefined
-    // console.log(this.props.activeRoom.key) -> undefined
-    // WORKS -> this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo('-LXq3jojCGhHtS_4BYu7')
-    // DOESN'T WORK -> this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo(this.props.activeRoom.key)
-    // DOESN'T WORK -> this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo(props.activeRoom.key)
+    // console.log(props.activeRoom.key) // undefined
+    // console.log(this.props.activeRoom.key) // undefined
+    // this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo('-LXq3jojCGhHtS_4BYu7')
+    // this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo(this.props.activeRoom.key)
+    // this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo(props.activeRoom.key)
 
     // ****************************
 
   }
+
+  //Client id and Secret
+  //287465316758-440gqer0dldhbs4hfijlrcnkbe2sco17.apps.googleusercontent.com
+  //Nfd4pMDmBPvYKDN9TvmCvo7i
+  //https://firebase.google.com/docs/auth/web/google-signin
+
+
+  // 287465316758-440gqer0dldhbs4hfijlrcnkbe2sco17.apps.googleusercontent.com
+  // Nfd4pMDmBPvYKDN9TvmCvo7i
 
 
   componentDidMount() {
@@ -51,20 +60,19 @@ class MessageList extends Component {
     return (
 
       <div>
-
         <h1>{this.props.activeRoom.name}</h1>
         <hr className="hr-light" />
 
-        {this.state.messages.filter(message => (
-          message.roomId === this.props.activeRoom.key
-        )).map(message => (
-          <div key={message.key}>
-            <p className="text-light">{message.content}</p>
-            <p className="text-light">{message.username}</p>
-            <hr className="hr-light" />
-          </div>
-        )
-        )}
+          {this.state.messages.filter(message => (
+            message.roomId === this.props.activeRoom.key
+          )).map(message => (
+            <div key={message.key}>
+              <p className="text-light">{message.content}</p>
+              <p className="text-light">{message.username}</p>
+              <hr className="hr-light" />
+            </div>
+          )
+          )}
       </div>
     );
   }

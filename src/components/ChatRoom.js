@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import RoomList from './RoomList';
 import MessageList from './MessageList';
+import User from './User';
 
-class RoomMessages extends Component {
+class ChatRoom extends Component {
 
   render(){
 
@@ -15,17 +16,22 @@ class RoomMessages extends Component {
                     activeRoom={this.props.activeRoom}
                     setActiveRoom={(room) => this.props.setActiveRoom(room)} />
             </div>
-            <div className="flex-fill py-5 px-3">
-                <MessageList
+            <div className="container-fluid py-0 px-2">
+                <User 
+                    firebase={this.props.firebase}
+                    userInfo={this.props.userInfo}
+                    setUserInfo={(user) => this.props.setUserInfo(user)}
+                />
+                 <MessageList
                     firebase={this.props.firebase}
                     activeRoom={this.props.activeRoom}
-                />
-            </div>
+                 />
+              </div>
         </div>
 
     )
   }
 }
 
-export default RoomMessages
+export default ChatRoom
 

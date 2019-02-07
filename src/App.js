@@ -14,13 +14,23 @@ var config = {
 };
 firebase.initializeApp(config);
 
+
 class App extends Component {
   constructor(props){
     super(props)
 
+    this.defaultUserInfo = {
+      displayName: "",
+      email: '',
+      photoURL: "/anon-person.png",
+      isLoggedIn: false
+    }
+
     this.state = {
-      activeRoom: {}
+      activeRoom: {},
+      userInfo: this.defaultUserInfo
     };
+
 
     this.roomsRef = firebase.database().ref("rooms");
     this.roomsRef.orderByChild("order_by_name").limitToFirst(1).on("child_added", snapshot => {
@@ -28,20 +38,34 @@ class App extends Component {
       activeRoom.key = snapshot.key;
       this.setState({ activeRoom: activeRoom });
     })
+    
   }
 
   setActiveRoom(room){
     this.setState({ activeRoom: room });
   }
 
+  setUserInfo(user){
+    user === null ? this.setState({userInfo: this.defaultUserInfo}) : this.setState(
+      {userInfo: {
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        isLoggedIn: true
+      }}) 
+
+  }
+
   render() {
     return (
 
-      <div className="container-fluid h-100 pl-0">
+      <div>
           <ChatRoom
             firebase={firebase}
             setActiveRoom={(room) => this.setActiveRoom(room)}
+            setUserInfo={(user) => this.setUserInfo(user)}
             activeRoom={this.state.activeRoom}
+            userInfo={this.state.userInfo}
           />
       </div>
 

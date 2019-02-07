@@ -37,3 +37,22 @@ hr.hr-light {
 .nav-link.active {
   color: #ffffff;
   background-color: #434a57; }
+
+img.rounded {
+  border-radius: 1.5rem !important;
+  width: 3em;
+  height: 3em;
+  padding: 3px; }
+
+.btn.login {
+  border-radius: 0.1rem !important; }
+
+.user-info {
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: bold; }
+
+.user-info .user-subtitle {
+  color: #D7D8D8;
+  font-size: 0.8rem;
+  font-weight: 500; }
