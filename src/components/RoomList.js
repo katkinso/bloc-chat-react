@@ -59,7 +59,7 @@ class RoomList extends Component {
   render() {
     return (
 
-      <div>
+      <div className="h-100">
         <form onSubmit={e => this.createRoom(e)}>
 
             <div className="input-group mb-3">

@@ -24,9 +24,6 @@ hr.hr-light {
   border: #0497C0;
   background-color: #0497C0; }
 
-.left-nav {
-  border-right: 1px solid #434a57; }
-
 .nav-link {
   color: #aaaaaa;
   cursor: pointer; }
@@ -56,3 +53,10 @@ img.rounded {
   color: #D7D8D8;
   font-size: 0.8rem;
   font-weight: 500; }
+
+.text-message-time {
+  color: #9198A4;
+  font-size: 0.9rem; }
+
+.message-content {
+  color: #9198A4; }

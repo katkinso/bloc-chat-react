@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-
+import SendMessage from './SendMessage';
+import { convertDateTime } from '../utils/utils'
 
 class MessageList extends Component {
   constructor(props) {
@@ -7,41 +8,17 @@ class MessageList extends Component {
 
     this.state = {
       messages: [],
-      newMessage: ""
+      newMessage: {
+        content: '',
+        createdAt: '',
+        roomId: '',
+        username: '',
+        key: ''
+      }
     };
-    this.messagesRef = props.firebase.database().ref("messages")
 
-    // ****************************
-    // To Ask Mentor on Thurs
-    // ****************************
-
-    // ** ISSUE **
-    // Although the app is working by filtering the data in the render() method aftre getting ALL the data from the firebase call.
-    // I would PREFER TO:
-    // Filter the call I make to firebase by passing props.activeRoom.key or this.props.activeRoom
-    // I know the firebase call works because I can manually enter the key.
-    // I know the prop is because passed because I am able to access in the render() method with no problem.
-
-    // ** TESTING **
-    // console.log(props.activeRoom.key) // undefined
-    // console.log(this.props.activeRoom.key) // undefined
-    // this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo('-LXq3jojCGhHtS_4BYu7')
-    // this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo(this.props.activeRoom.key)
-    // this.messagesRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo(props.activeRoom.key)
-
-    // ****************************
-
+    this.messagesRef = this.props.firebase.database().ref("messages")
   }
-
-  //Client id and Secret
-  //287465316758-440gqer0dldhbs4hfijlrcnkbe2sco17.apps.googleusercontent.com
-  //Nfd4pMDmBPvYKDN9TvmCvo7i
-  //https://firebase.google.com/docs/auth/web/google-signin
-
-
-  // 287465316758-440gqer0dldhbs4hfijlrcnkbe2sco17.apps.googleusercontent.com
-  // Nfd4pMDmBPvYKDN9TvmCvo7i
-
 
   componentDidMount() {
 
@@ -54,6 +31,44 @@ class MessageList extends Component {
     });
   }
 
+  setMessage(e){
+    
+    const newMessage = {
+      content: e.target.value,
+      createdAt: '',
+      roomId: this.props.activeRoom.key,
+      username: this.props.userInfo.displayName,
+      key: ''
+    }
+
+    this.setState({  newMessage: newMessage });
+
+  }
+
+  sendMessage(e){
+    e.preventDefault();
+
+    this.messagesRef.push({ 
+      content: this.state.newMessage.content,
+      createdAt: this.props.firebase.database.ServerValue.TIMESTAMP,
+      roomId: this.state.newMessage.roomId,
+      username: this.state.newMessage.username
+     }).then(() => {
+
+      this.setState({
+        newMessage: {
+          content: '',
+          createdAt: '',
+          roomId: '',
+          username: '',
+          key: ''
+        }
+      });
+
+     })
+
+  }
+
 
   render() {
     
@@ -63,19 +78,63 @@ class MessageList extends Component {
         <h1>{this.props.activeRoom.name}</h1>
         <hr className="hr-light" />
 
-          {this.state.messages.filter(message => (
-            message.roomId === this.props.activeRoom.key
-          )).map(message => (
+        {this.state.messages.filter(message => (
+          message.roomId === this.props.activeRoom.key
+        )).map(message => (
             <div key={message.key}>
-              <p className="text-light">{message.content}</p>
-              <p className="text-light">{message.username}</p>
+
+            <div className="row">
+
+              <div className="col-10">
+                <p className="text-light font-weight-bold">{message.username}</p>
+                <p className="text-light">{message.content}</p>
+              </div>
+              
+              <div className="col-2 text-right">
+                <p className="text-message-time">{convertDateTime(message.createdAt)}</p>
+              </div>
+
+              </div>
               <hr className="hr-light" />
             </div>
+            
           )
           )}
+
+          <SendMessage
+              firebase={this.props.firebase}
+              setMessage={(e) => this.setMessage(e)}
+              sendMessage={(e) => this.sendMessage(e)}
+              newMessage={this.state.newMessage.content}
+            />
       </div>
     );
   }
 }
 
 export default MessageList;
+
+
+//  //Note - moving logic to call db on room change
+//  componentDidUpdate(prevProps, prevState) {
+
+//   if (this.props.activeRoom.key === prevProps.activeRoom.key){
+//     return;
+//   }
+
+//   const messageRef = this.props.firebase.database().ref("messages").orderByChild("roomId").equalTo(this.props.activeRoom.key);
+  
+//   messageRef.off("child_added")
+//   this.setState({ messages: []})
+  
+//   messageRef.on("child_added", snapshot => {
+//     const message = snapshot.val();
+//     message.key = snapshot.key;
+//     // message.createdAt = message.createdAt;
+//     // console.log(message)
+//     // this.state.createdAt
+//     this.setState({ 
+//         messages: this.state.messages.concat(message)
+//       });
+//   });
+// }

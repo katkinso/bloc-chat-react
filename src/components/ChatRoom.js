@@ -3,6 +3,7 @@ import RoomList from './RoomList';
 import MessageList from './MessageList';
 import User from './User';
 
+
 class ChatRoom extends Component {
 
   render(){
@@ -10,13 +11,13 @@ class ChatRoom extends Component {
     return (
 
         <div className="d-flex flex-row h-100">
-            <div className="left-nav h-100 px-3 py-5">
+            <div className="left-nav h-100 px-3 py-3">
                 <RoomList
                     firebase={this.props.firebase}
                     activeRoom={this.props.activeRoom}
                     setActiveRoom={(room) => this.props.setActiveRoom(room)} />
             </div>
-            <div className="container-fluid py-0 px-2">
+            <div className="container-fluid py-0 px-4">
                 <User 
                     firebase={this.props.firebase}
                     userInfo={this.props.userInfo}
@@ -25,6 +26,7 @@ class ChatRoom extends Component {
                  <MessageList
                     firebase={this.props.firebase}
                     activeRoom={this.props.activeRoom}
+                    userInfo={this.props.userInfo}
                  />
               </div>
         </div>

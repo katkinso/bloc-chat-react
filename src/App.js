@@ -20,7 +20,7 @@ class App extends Component {
     super(props)
 
     this.defaultUserInfo = {
-      displayName: "",
+      displayName: "Guest",
       email: '',
       photoURL: "/anon-person.png",
       isLoggedIn: false

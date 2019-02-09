@@ -40,7 +40,7 @@ hr.hr-light{
 
 //Navigation
 .left-nav{
-  border-right: 1px solid $very-dark-gray;
+  // border-right: 1px solid $very-dark-gray;
 }
 
 //Room Selector
@@ -88,4 +88,14 @@ img.rounded{
   font-size: 0.8rem;
   font-weight: 500;
 
+}
+
+.text-message-time{
+  color: #9198A4;
+  font-size: 0.9rem;
+}
+
+.message-content{
+  color: #9198A4;
+  // font-weight: 300;
 }
