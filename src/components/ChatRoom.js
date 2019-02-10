@@ -15,7 +15,9 @@ class ChatRoom extends Component {
                 <RoomList
                     firebase={this.props.firebase}
                     activeRoom={this.props.activeRoom}
-                    setActiveRoom={(room) => this.props.setActiveRoom(room)} />
+                    setActiveRoom={(room) => this.props.setActiveRoom(room)} 
+                    setRoomToDelete={(room) => this.props.setRoomToDelete(room)} 
+                    />
             </div>
             <div className="container-fluid py-0 px-4">
                 <User 
@@ -24,6 +26,7 @@ class ChatRoom extends Component {
                     setUserInfo={(user) => this.props.setUserInfo(user)}
                 />
                  <MessageList
+                    roomToDelete={this.props.roomToDelete}
                     firebase={this.props.firebase}
                     activeRoom={this.props.activeRoom}
                     userInfo={this.props.userInfo}

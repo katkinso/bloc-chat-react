@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import DeleteRoom from './DeleteRoom'
 
 class RoomList extends Component {
   constructor(props) {
@@ -6,7 +7,8 @@ class RoomList extends Component {
 
     this.state = {
       rooms: [],
-      newRoomName: ""
+      newRoomName: "",
+      deletedRoom: ""
     };
 
     this.roomsRef = props.firebase.database().ref("rooms");
@@ -51,6 +53,20 @@ class RoomList extends Component {
 
   }
 
+  deleteRoom(room){
+    const newRooms = this.state.rooms.filter(r => r.key !== room.key)
+    
+     this.roomsRef.child(room.key).remove(function(error){
+       if (error){
+         console.log(error)
+         return false;
+       }
+     })
+
+     this.props.setActiveRoom(newRooms[0]) //RESET ACTIVE ROOM - not working to rerender room list.
+     this.setState({ rooms : newRooms })
+  }
+
   findRoomByName(roomName){
     return this.state.rooms.find(room => roomName.toLowerCase() === room.name.toLowerCase())
   }
@@ -79,15 +95,28 @@ class RoomList extends Component {
         </form>
       
         {this.state.rooms.map((room) => {
+          
           return (
               <div 
                 onClick={() => this.props.setActiveRoom(room)}
                 key={room.key} 
                 className={room.key === this.props.activeRoom.key ? "nav-link active" : "nav-link"}>
                 {room.name}
-              </div>
+                <div className="float-right">
+                
+                    <DeleteRoom
+                      room={room}
+                      deleteRoom={(room) => this.deleteRoom(room)}
+                      setRoomToDelete={(room) => this.props.setRoomToDelete(room)}
+                    />
+                    
+                </div>
+                </div>
+
             )
         })}
+
+          
 
       </div>
     );
@@ -95,3 +124,13 @@ class RoomList extends Component {
 }
 
 export default RoomList;
+// <DeleteRoom
+//             activeRoom={this.props.activeRoom.key}
+//             deleteRoom={() => this.deleteRoom()}
+//           />
+
+// <div className="float-right px-3">
+// <i className={room.key === this.props.activeRoom.key ? "fas fa-pencil-alt active" : "fas"}></i>
+// </div>
+
+// <i className={room.key === this.props.activeRoom.key ? "fas fa-trash-alt active" : "fas"}></i>

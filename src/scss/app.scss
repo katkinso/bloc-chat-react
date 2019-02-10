@@ -1,10 +1,12 @@
 $secondary: #1BB954;
 $very-dark-gray: #434a57;
+$light-gray: #9198A4;
 $primary: #08b3e2;
+$background-color: #282c34;
 
 //Formatting
 body{
-  background-color: #282c34;
+  background-color: $background-color;
 }
 
 h1,h2,h3{
@@ -39,10 +41,6 @@ hr.hr-light{
 
 
 //Navigation
-.left-nav{
-  // border-right: 1px solid $very-dark-gray;
-}
-
 //Room Selector
 .nav-link{
   color:rgb(170, 170, 170);
@@ -57,6 +55,21 @@ hr.hr-light{
   color: #ffffff;
   background-color: $very-dark-gray;
 }
+
+.nav-link i{
+  color:#5E6778;
+}
+
+.nav-link i.active{
+  color: #ffffff;
+  }
+
+.nav-link i:hover{
+  color: #ffffff;
+}
+
+
+
 
 img.rounded{
   border-radius:1.5rem!important;
@@ -91,11 +104,11 @@ img.rounded{
 }
 
 .text-message-time{
-  color: #9198A4;
+  color: $light-gray;
   font-size: 0.9rem;
 }
 
 .message-content{
-  color: #9198A4;
+  color: $light-gray;
   // font-weight: 300;
 }

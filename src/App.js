@@ -28,21 +28,34 @@ class App extends Component {
 
     this.state = {
       activeRoom: {},
+      roomToDelete: {},
       userInfo: this.defaultUserInfo
     };
 
 
     this.roomsRef = firebase.database().ref("rooms");
+    // this.resetActiveRoom()
     this.roomsRef.orderByChild("order_by_name").limitToFirst(1).on("child_added", snapshot => {
       const activeRoom = snapshot.val();
       activeRoom.key = snapshot.key;
-      this.setState({ activeRoom: activeRoom });
+      this.setState({ activeRoom: activeRoom });   
     })
-    
   }
 
   setActiveRoom(room){
     this.setState({ activeRoom: room });
+    console.log(this.state.activeRoom)
+  }
+
+
+  // resetActiveRoom(room){
+  //   this.setState({ activeRoom: room }); 
+  //   console.log(this.state.activeRoom)   
+  // }
+
+
+  setRoomToDelete(room){
+     this.setState({ roomToDelete : room })
   }
 
   setUserInfo(user){
@@ -64,7 +77,9 @@ class App extends Component {
             firebase={firebase}
             setActiveRoom={(room) => this.setActiveRoom(room)}
             setUserInfo={(user) => this.setUserInfo(user)}
+            setRoomToDelete={(room) => this.setRoomToDelete(room)}
             activeRoom={this.state.activeRoom}
+            roomToDelete={this.state.roomToDelete}
             userInfo={this.state.userInfo}
           />
       </div>

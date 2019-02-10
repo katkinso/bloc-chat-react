@@ -35,6 +35,15 @@ hr.hr-light {
   color: #ffffff;
   background-color: #434a57; }
 
+.nav-link i {
+  color: #5E6778; }
+
+.nav-link i.active {
+  color: #ffffff; }
+
+.nav-link i:hover {
+  color: #ffffff; }
+
 img.rounded {
   border-radius: 1.5rem !important;
   width: 3em;

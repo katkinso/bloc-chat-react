@@ -12,11 +12,12 @@ const convertDateTime = (timestamp) => {
         return 'Yesterday ' + moment(timestamp).format('h:mm a')
     }
 
-    if (currentDay < today) {
-      return moment(timestamp).format('MMMM Do YYYY h:mm a')
+    if (currentDay  === today){
+      return moment(timestamp).format('h:mm a')
     }
 
-      return moment(timestamp).format('h:mm a')
+    return moment(timestamp).format('MMMM Do YYYY h:mm a')
+
 }
 
 export { convertDateTime } 
