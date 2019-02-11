@@ -34,7 +34,6 @@ class App extends Component {
 
 
     this.roomsRef = firebase.database().ref("rooms");
-    // this.resetActiveRoom()
     this.roomsRef.orderByChild("order_by_name").limitToFirst(1).on("child_added", snapshot => {
       const activeRoom = snapshot.val();
       activeRoom.key = snapshot.key;
@@ -44,15 +43,7 @@ class App extends Component {
 
   setActiveRoom(room){
     this.setState({ activeRoom: room });
-    console.log(this.state.activeRoom)
   }
-
-
-  // resetActiveRoom(room){
-  //   this.setState({ activeRoom: room }); 
-  //   console.log(this.state.activeRoom)   
-  // }
-
 
   setRoomToDelete(room){
      this.setState({ roomToDelete : room })

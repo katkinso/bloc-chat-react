@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import DeleteRoom from './DeleteRoom'
+import EditRoomName from './EditRoomName'
 
 class RoomList extends Component {
   constructor(props) {
@@ -8,7 +9,9 @@ class RoomList extends Component {
     this.state = {
       rooms: [],
       newRoomName: "",
-      deletedRoom: ""
+      deletedRoom: "",
+      editedRoomName: "",
+      roomToEdit: {}
     };
 
     this.roomsRef = props.firebase.database().ref("rooms");
@@ -20,6 +23,7 @@ class RoomList extends Component {
       room.key = snapshot.key;
       this.setState({ rooms: this.state.rooms.concat(room) });
     });
+    
   }
 
   handleRoomNameChange(e){
@@ -53,8 +57,38 @@ class RoomList extends Component {
 
   }
 
+
+  setRoomToEdit(room){
+     this.setState({ roomToEdit: room })
+  }
+
+  handleEditRoomName(room){
+    this.setState({ editedRoomName: room.target.value });
+  }
+
+  renameRoom(e){
+    e.preventDefault();
+
+    const newRoomName = this.state.editedRoomName.trim()
+    if (!newRoomName){return;}
+
+    const newEditedRoom = {
+      name: newRoomName,
+      order_by_name: newRoomName.toLowerCase(),
+      key: this.state.roomToEdit.key
+    }
+
+     this.roomsRef.child(newEditedRoom.key)
+        .update({"name":newEditedRoom.name,
+        "order_by_name":newEditedRoom.order_by_name
+      })
+
+     const filtered = this.state.rooms.filter(room => room.key !== newEditedRoom.key);
+     this.setState({rooms: filtered.concat(newEditedRoom)})
+  }
+
   deleteRoom(room){
-    const newRooms = this.state.rooms.filter(r => r.key !== room.key)
+     const newRooms = this.state.rooms.filter(r => r.key !== room.key)
     
      this.roomsRef.child(room.key).remove(function(error){
        if (error){
@@ -63,7 +97,7 @@ class RoomList extends Component {
        }
      })
 
-     this.props.setActiveRoom(newRooms[0]) //RESET ACTIVE ROOM - not working to rerender room list.
+     this.props.setActiveRoom(newRooms[0])
      this.setState({ rooms : newRooms })
   }
 
@@ -93,29 +127,38 @@ class RoomList extends Component {
             </div>
 
         </form>
-      
+
         {this.state.rooms.map((room) => {
-          
-          return (
-              <div 
-                onClick={() => this.props.setActiveRoom(room)}
-                key={room.key} 
-                className={room.key === this.props.activeRoom.key ? "nav-link active" : "nav-link"}>
-                {room.name}
-                <div className="float-right">
+
+            return (
+
+              <div key={room.key}
+               className={room.key === this.props.activeRoom.key ? "nav-link active d-flex" : "nav-link d-flex"}>
+              
+                <div className="flex-grow-1" onClick={() => this.props.setActiveRoom(room)}>
+                  {room.name}
+                </div>
+
+                <EditRoomName
+                  room={room}
+                  editedRoomName={this.state.editedRoomName}
+                  renameRoom={(room) => this.renameRoom(room)}
+                  handleEditRoomName={(room) => this.handleEditRoomName(room)}
+                  setRoomToEdit={(room) => this.setRoomToEdit(room)}
+                />
+
+                <DeleteRoom
+                  room={room}
+                  deleteRoom={(room) => this.deleteRoom(room)}
+                  setRoomToDelete={(room) => this.props.setRoomToDelete(room)}
+                />
                 
-                    <DeleteRoom
-                      room={room}
-                      deleteRoom={(room) => this.deleteRoom(room)}
-                      setRoomToDelete={(room) => this.props.setRoomToDelete(room)}
-                    />
-                    
-                </div>
-                </div>
+
+              </div>
 
             )
         })}
-
+       
           
 
       </div>
@@ -134,3 +177,6 @@ export default RoomList;
 // </div>
 
 // <i className={room.key === this.props.activeRoom.key ? "fas fa-trash-alt active" : "fas"}></i>
+// <i className="fas fa-pencil-alt" onClick={() => this.setRoomToEdit(room)}></i>
+
+

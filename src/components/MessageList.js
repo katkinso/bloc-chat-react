@@ -73,6 +73,18 @@ class MessageList extends Component {
   }
 
 
+  deleteMessage(key){
+    const filteredMessages = this.state.messages.filter(m => m.key !== key)
+    this.messagesRef.child(key).remove(function(error){
+      if (error){
+        console.log(error)
+        return false;
+      }
+    })
+    this.setState({ messages : filteredMessages })
+  }
+
+
 
 
   render() {
@@ -95,7 +107,7 @@ class MessageList extends Component {
               </div>
               
               <div className="col-2 text-right">
-                <p className="text-message-time">{convertDateTime(message.createdAt)}</p>
+                <p className="text-message-time">{convertDateTime(message.createdAt)}&nbsp;<i className="fas fa-trash-alt nav-link" onClick={() => this.deleteMessage(message.key)}></i></p>
               </div>
 
               </div>

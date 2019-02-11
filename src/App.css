@@ -5,7 +5,7 @@ h1, h2, h3 {
   color: #ffffff; }
 
 hr.hr-light {
-  border-top: 1px solid #434a57; }
+  border-top: 1px solid #313640; }
 
 .btn, .btn:focus {
   font-weight: 600;
@@ -33,10 +33,10 @@ hr.hr-light {
 
 .nav-link.active {
   color: #ffffff;
-  background-color: #434a57; }
+  background-color: #313640; }
 
 .nav-link i {
-  color: #5E6778; }
+  color: #434a57; }
 
 .nav-link i.active {
   color: #ffffff; }

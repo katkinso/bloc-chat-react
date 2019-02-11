@@ -16,7 +16,7 @@ const convertDateTime = (timestamp) => {
       return moment(timestamp).format('h:mm a')
     }
 
-    return moment(timestamp).format('MMMM Do YYYY h:mm a')
+    return moment(timestamp).format('MMM Do h:mm a')
 
 }
 
