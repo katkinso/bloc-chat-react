@@ -15,13 +15,16 @@ class SendMessage extends Component {
             <div className="input-group mb-3">
 
             <textarea name="comment"
-            className="form-control"
+            className="form-control message"
                 placeholder="Message"
                 aria-label="Message"
                 aria-describedby="button-roomname"
                 onChange={e => this.props.setMessage(e)}
+                onKeyDown={e => this.props.setMessage(e)}
                 value={this.props.newMessage}
-                rows="3"></textarea>
+                rows="3"
+                style={{height:this.props.textareaHeight}}
+                ></textarea>
             
            
             <div className="input-group-append">
@@ -37,16 +40,4 @@ class SendMessage extends Component {
 }
 
 export default SendMessage
-
-
-
-// <input type="text"
-//                 className="form-control"
-//                 placeholder="Message"
-//                 aria-label="Message"
-//                 aria-describedby="button-roomname"
-//                 onChange={e => this.props.setMessage(e)}
-//                 onKeyDown={this.onSubmit}
-//                 value={this.props.newMessage}
-//             />
 

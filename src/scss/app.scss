@@ -4,9 +4,21 @@ $light-gray: #9198A4;
 $primary: #08b3e2;
 $background-color: #282c34;
 
-//Formatting
-body{
+//Formatting   
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background-color: $background-color;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
 
 h1,h2,h3{
@@ -39,8 +51,6 @@ hr.hr-light{
   background-color: #0497C0;
 }
 
-
-//Navigation
 //Room Selector
 .nav-link{
   color:rgb(170, 170, 170);
@@ -70,7 +80,6 @@ hr.hr-light{
 
 
 
-
 img.rounded{
   border-radius:1.5rem!important;
   width:3em;
@@ -81,10 +90,6 @@ img.rounded{
 
 
 //userinfo
-.navbar {
-  // border-bottom: 1px solid #434A57;
-  // background-color: #434A57;
-}
 .btn.login{
   border-radius:0.1rem!important;
 }
@@ -104,11 +109,81 @@ img.rounded{
 }
 
 .text-message-time{
-  color: $light-gray;
-  font-size: 0.9rem;
+  color: #fff;
+  font-size: 0.8rem;
 }
 
 .message-content{
   color: $light-gray;
   // font-weight: 300;
 }
+
+.message-menu i{
+  color: $light-gray;
+}
+
+.message-menu i:focus{
+  color: #fff;
+}
+.message-menu .btn-secondary, .message-menu .btn-secondary:not(:disabled):not(.disabled):active{
+  background-color: #282c34;
+  border: 0px solid $light-gray;
+}
+
+.message-menu i:hover{
+  color: #fff;
+}
+
+.message-menu .btn-secondary:hover{
+  border: 0px solid #fff
+}
+
+.dropleft .dropdown-toggle::before, .dropright .dropdown-toggle::after{
+  border-top: 0 solid transparent; 
+  border-right: 0 solid;
+  margin-right: 0;
+  content:none;
+}
+
+.btn-secondary:not(:disabled):not(.disabled).active:focus, .btn-secondary:not(:disabled):not(.disabled):active:focus, .show>.btn-secondary.dropdown-toggle:focus{
+  box-shadow: none;
+  border: 0px solid #fff
+}
+
+.btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show>.btn-secondary.dropdown-toggle{
+  background-color: #282c34;
+  color: #fff
+}
+
+.room-menu .btn-secondary{
+  background-color: transparent;
+}
+.room-menu{
+  background-color: transparent;
+}
+
+.room-menu .btn-secondary:hover{
+  border: 0px solid $very-dark-gray;
+}
+
+
+.room-menu .btn-secondary:not(:disabled):not(.disabled).active:focus{
+  box-shadow: none;
+  border: 0px solid $very-dark-gray;
+}
+
+.menu-fix-it > div{
+    padding-left: 24px;
+    min-height: 25px;
+    margin-top: -5px;
+    display: block;
+}
+
+textarea.message{
+  min-height: 100px;
+}
+//Menu
+
+
+// $very-dark-gray: #313640;
+// $light-gray: #9198A4;

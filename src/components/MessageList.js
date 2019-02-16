@@ -1,5 +1,13 @@
 import React, { Component } from "react";
 import SendMessage from './SendMessage';
+import DeleteModal from './DeleteModal';
+import EditModal from './EditModal';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
+
+
+
 import { convertDateTime } from '../utils/utils'
 
 class MessageList extends Component {
@@ -14,28 +22,32 @@ class MessageList extends Component {
         roomId: '',
         username: '',
         key: ''
-      }
+      },
+      editedMessage:"",
+      messageToEdit:{},
+      textareaHeight:100
     };
 
     this.messagesRef = this.props.firebase.database().ref("messages")
   }
 
   componentDidMount() {
-    
     this.messagesRef.orderByChild("key").on("child_added", snapshot => {
       const message = snapshot.val();
       message.key = snapshot.key;
-
-      this.setState({ 
-          messages: this.state.messages.concat(message)
-          
-        })
+      this.setState({  messages: this.state.messages.concat(message)})
       });
   }
 
-
   setMessage(e){
-    
+
+    if(e.keyCode === 13 && e.shiftKey === false){
+      this.sendMessage(e)
+      return;
+    }
+
+    this.setTextAreaHeight(e)
+
     const newMessage = {
       content: e.target.value,
       createdAt: '',
@@ -44,37 +56,36 @@ class MessageList extends Component {
       key: ''
     }
 
-    this.setState({  newMessage: newMessage });
+    this.setState({ newMessage: newMessage });
 
   }
 
   sendMessage(e){
     e.preventDefault();
-
-    this.messagesRef.push({ 
-      content: this.state.newMessage.content,
-      createdAt: this.props.firebase.database.ServerValue.TIMESTAMP,
-      roomId: this.state.newMessage.roomId,
-      username: this.state.newMessage.username
-     }).then(() => {
-
-      this.setState({
-        newMessage: {
-          content: '',
-          createdAt: '',
-          roomId: '',
-          username: '',
-          key: ''
-        }
-      });
-
-     })
-
+      this.messagesRef.push({ 
+        content: this.state.newMessage.content,
+        createdAt: this.props.firebase.database.ServerValue.TIMESTAMP,
+        roomId: this.state.newMessage.roomId,
+        username: this.state.newMessage.username
+       }).then(() => {
+  
+        this.setState({
+          newMessage: {
+            content: '',
+            createdAt: '',
+            roomId: '',
+            username: '',
+            key: ''
+          },
+          textareaHeight: 100
+        });
+       })
   }
 
 
   deleteMessage(key){
-    const filteredMessages = this.state.messages.filter(m => m.key !== key)
+    const filteredMessages = this.state.messages.filter(message => message.key !== key)
+
     this.messagesRef.child(key).remove(function(error){
       if (error){
         console.log(error)
@@ -84,8 +95,53 @@ class MessageList extends Component {
     this.setState({ messages : filteredMessages })
   }
 
+  setMessageToEdit(message){
+    this.setState({ messageToEdit: message })
+  }
+
+  commitMessage(message){
+    if (!this.state.editedMessage.trim()){return;}
+
+    const editedMessage = {
+      content: this.state.editedMessage,
+      key: this.state.messageToEdit.uuid,
+      createdAt: this.state.messageToEdit.createdAt,
+      roomId: this.state.messageToEdit.roomId,
+      username: this.state.messageToEdit.username
+    }
+
+     this.messagesRef.child(editedMessage.key)
+        .update({"content":editedMessage.content
+      })
+
+     const filtered = this.state.messages.filter(message => message.key !== editedMessage.key);
+     this.setState({
+       messages: filtered.concat(editedMessage),
+       editedMessage: "",
+       messageToEdit: {},
+       textareaHeight: 100
+    })
+  }
 
 
+  handleMidEditState(message){
+    if (message.target){      
+      this.setState({ editedMessage: message.target.value });
+      return;
+    }
+    this.setState({ editedMessage: message.content });
+  }
+
+  setTextAreaHeight(e){
+      this.setState({ textareaHeight: e.target.scrollHeight });
+  }
+
+  formatMessageContent(content) {
+    return content.split("\n").map(
+      (word, index) => {
+        return (<span className="text-light" key={index}>{word}<br /></span>)
+      })
+  }
 
   render() {
     
@@ -97,17 +153,54 @@ class MessageList extends Component {
         {this.state.messages.filter(message => (
           message.roomId === this.props.activeRoom.key
         )).map(message => (
-            <div key={message.key}>
-
+            <div key={message.createdAt}>
+            
             <div className="row">
 
-              <div className="col-10">
-                <p className="text-light font-weight-bold">{message.username}</p>
-                <p className="text-light">{message.content}</p>
+              <div className="col-11">
+                <p><span className="text-light font-weight-bold">{message.username}</span> <span className="text-message-time">{convertDateTime(message.createdAt)}</span></p>
+                {this.formatMessageContent(message.content)}
               </div>
               
-              <div className="col-2 text-right">
-                <p className="text-message-time">{convertDateTime(message.createdAt)}&nbsp;<i className="fas fa-trash-alt nav-link" onClick={() => this.deleteMessage(message.key)}></i></p>
+              <div className="col-1 text-align-right">
+
+                  <ButtonToolbar>
+                    <DropdownButton
+                      drop="left"
+                      variant="secondary"
+                      title=<i className="fas fa-ellipsis-h"></i>
+                      id="messageMenuButton"
+                      key="messageMenuButton"
+                      className="message-menu"
+                    >
+                    <Dropdown.Item eventKey="1">
+                      <DeleteModal
+                        {...message}
+                        uuid={message.key}
+                        trigger="Delete"
+                        size="lg"
+                        objectType="message"
+                        deleteObject={() => this.deleteMessage(message.key)}
+                      />
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey="2"></Dropdown.Item>
+                    <EditModal
+                      {...message}
+                      uuid={message.key}
+                      key="1"
+                      midEditState={this.state.editedMessage}
+                      commitEdit={message => this.commitMessage(message)}
+                      handleMidEditState={message => this.handleMidEditState(message)}
+                      setObjectToEdit={message => this.setMessageToEdit(message)}
+                      size="lg"
+                      objectType="message"
+                      trigger="Edit"
+                      controlType="textarea"
+                      textareaHeight={this.state.textareaHeight}
+                    />
+                  </DropdownButton>
+              </ButtonToolbar>    
+
               </div>
 
               </div>
@@ -122,7 +215,8 @@ class MessageList extends Component {
               setMessage={(e) => this.setMessage(e)}
               sendMessage={(e) => this.sendMessage(e)}
               newMessage={this.state.newMessage.content}
-            />
+              textareaHeight={this.state.textareaHeight}
+          />
       </div>
     );
   }
@@ -154,3 +248,51 @@ export default MessageList;
 //       });
 //   });
 // }
+
+
+// <Dropdown.Item eventKey="1">
+                              // <DeleteMessage
+                              //   deleteMessage={() => this.deleteMessage(message)}
+                              //   message={message}
+                              // />
+
+
+
+                            //   <EditMessage
+                            //   editMessage={() => this.editMessage(message)}
+                            //   setMessageToEdit={() => this.setMessageToEdit(message)}
+                            //   message={message}
+                            // />
+
+
+
+
+                    //         <ButtonToolbar>
+                    //       <DropdownButton
+                    //         drop="left"
+                    //         variant="secondary"
+                    //         title=<i className="fas fa-ellipsis-h"></i>
+                    //         id="messageMenuButton"
+                    //         key="messageMenuButton"
+                    //         className="message-menu"
+                    //       >
+                    //       <Dropdown.Item eventKey="1">
+                    //         <DeleteModal
+                    //           {...message}
+                    //           uuid={message.key}
+                    //           trigger="Delete"
+                    //           size="lg"
+                    //           objectType="message"
+                    //           deleteObject={() => this.deleteMessage(message.key)}
+                    //         />
+                    //       </Dropdown.Item>
+                    //       <Dropdown.Item eventKey="2">
+                    //         <EditMessage
+                    //           editMessage={() => this.editMessage(message)}
+                    //           setMessageToEdit={() => this.setMessageToEdit(message)}
+                    //           message={message}
+                    //         />
+                    //       </Dropdown.Item>
+                    //     </DropdownButton>
+                    // </ButtonToolbar>                
+                

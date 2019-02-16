@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 
-class EditRoomName extends Component {
+class EditMessage extends Component {
 
     constructor(props) {
         super(props);
@@ -13,25 +12,25 @@ class EditRoomName extends Component {
         };
       }
     
-      handleClose(room) {
+      handleClose(message) {
         this.setState({ show: false });
       }
     
-      handleShow(room) {
+      handleShow(message) {
           this.setState({ show: true });
-          this.props.setRoomToEdit(room)
+          this.props.setMessageToEdit(message)
       }
 
       render() {
         return (
 
-            <div className="px-2">
-               <i className="fas fa-pencil-alt" onClick={() => this.handleShow(this.props.room)}></i>
+            <div>
+               <span onClick={() => this.handleShow(this.props.message)}>Edit Message</span>
 
                 <Modal centered show={this.state.show} onHide={() => this.handleClose()}>
-                    <form onSubmit={e => this.props.renameRoom(e)}>
+                    <form onSubmit={e => this.props.editMessage(e)}>
                         <Modal.Header closeButton>
-                            <Modal.Title>Edit Room Name: {this.props.room.name}</Modal.Title>
+                            <Modal.Title>Edit Message</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
 
@@ -41,8 +40,8 @@ class EditRoomName extends Component {
                                 placeholder="New Name"
                                 aria-label="New Name"
                                 aria-describedby="button-roomname"
-                                onChange={e => this.props.handleEditRoomName(e)}
-                                value={this.props.editedRoomName}
+                                onChange={e => this.props.handleEditMessage(e)}
+                                value={this.props.editedMessage}
                                 id="Room"
                                 />
                             </div>
@@ -50,7 +49,7 @@ class EditRoomName extends Component {
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={() => this.handleClose()}>Cancel</Button>
-                            <Button variant="primary" type="submit" onClick={() => this.handleClose()}> Rename Room</Button>
+                            <Button variant="primary" type="submit" onClick={() => this.handleClose()}>Save</Button>
                         </Modal.Footer>
                     </form>
                 </Modal>
@@ -61,4 +60,4 @@ class EditRoomName extends Component {
       }
     }
 
-export default EditRoomName
+export default EditMessage

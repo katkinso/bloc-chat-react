@@ -1,22 +1,14 @@
 import React, { Component } from 'react';
-import './App.css';
+import RoomList from './components/RoomList';
+import MessageList from './components/MessageList';
+import User from './components/User';
 import * as firebase from 'firebase';
-import ChatRoom from './components/ChatRoom';
-
-// Initialize Firebase
-var config = {
-  apiKey: "AIzaSyCyCnbQMzmYVTMi_94AGX87oXmepx1EWWg",
-  authDomain: "bloc-chat-186a9.firebaseapp.com",
-  databaseURL: "https://bloc-chat-186a9.firebaseio.com",
-  projectId: "bloc-chat-186a9",
-  storageBucket: "bloc-chat-186a9.appspot.com",
-  messagingSenderId: "287465316758"
-};
-firebase.initializeApp(config);
+import { firebaseConfig } from './config';
+firebase.initializeApp(firebaseConfig);
 
 
 class App extends Component {
-  constructor(props){
+  constructor(props) {
     super(props)
 
     this.defaultUserInfo = {
@@ -32,12 +24,15 @@ class App extends Component {
       userInfo: this.defaultUserInfo
     };
 
-
     this.roomsRef = firebase.database().ref("rooms");
+    this.initalizeRoom();
+  }
+
+  initalizeRoom() {
     this.roomsRef.orderByChild("order_by_name").limitToFirst(1).on("child_added", snapshot => {
       const activeRoom = snapshot.val();
       activeRoom.key = snapshot.key;
-      this.setState({ activeRoom: activeRoom });   
+      this.setState({ activeRoom: activeRoom });
     })
   }
 
@@ -49,30 +44,43 @@ class App extends Component {
      this.setState({ roomToDelete : room })
   }
 
-  setUserInfo(user){
-    user === null ? this.setState({userInfo: this.defaultUserInfo}) : this.setState(
-      {userInfo: {
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        isLoggedIn: true
-      }}) 
-
+  setUserInfo(user) {
+    user === null ? this.setState({ userInfo: this.defaultUserInfo }) : this.setState(
+      {
+        userInfo: {
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          isLoggedIn: true
+        }
+      })
   }
 
   render() {
     return (
 
-      <div>
-          <ChatRoom
+      <div className="d-flex flex-row h-100">
+        <div className="left-nav h-100 px-3 py-3">
+          <RoomList
             firebase={firebase}
-            setActiveRoom={(room) => this.setActiveRoom(room)}
-            setUserInfo={(user) => this.setUserInfo(user)}
-            setRoomToDelete={(room) => this.setRoomToDelete(room)}
             activeRoom={this.state.activeRoom}
+            setActiveRoom={(room) => this.setActiveRoom(room)}
+            setRoomToDelete={(room) => this.setRoomToDelete(room)}
+          />
+        </div>
+        <div className="container-fluid py-0 px-1">
+          <User
+            firebase={firebase}
+            userInfo={this.state.userInfo}
+            setUserInfo={(user) => this.setUserInfo(user)}
+          />
+          <MessageList
             roomToDelete={this.state.roomToDelete}
+            firebase={firebase}
+            activeRoom={this.state.activeRoom}
             userInfo={this.state.userInfo}
           />
+        </div>
       </div>
 
     );

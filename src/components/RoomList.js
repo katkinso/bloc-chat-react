@@ -1,6 +1,10 @@
 import React, { Component } from "react";
-import DeleteRoom from './DeleteRoom'
-import EditRoomName from './EditRoomName'
+import EditModal from './EditModal'
+import CreateRoom from './CreateRoom'
+import DeleteModal from './DeleteModal';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 class RoomList extends Component {
   constructor(props) {
@@ -26,7 +30,7 @@ class RoomList extends Component {
     
   }
 
-  handleRoomNameChange(e){
+  handleRoomNameCreate(e){
     const newRoomName = e.target.value;
     this.setState({newRoomName:newRoomName})
   }
@@ -57,52 +61,61 @@ class RoomList extends Component {
 
   }
 
-
   setRoomToEdit(room){
      this.setState({ roomToEdit: room })
   }
 
-  handleEditRoomName(room){
-    this.setState({ editedRoomName: room.target.value });
+  handleMidEditRoomName(room){
+
+    if (room.target){
+      this.setState({ editedRoomName: room.target.value });
+      return;
+    }
+    this.setState({ editedRoomName: room.name });
   }
 
-  renameRoom(e){
-    e.preventDefault();
+  renameRoom(){
+    if (!this.state.editedRoomName.trim()){return;}
 
-    const newRoomName = this.state.editedRoomName.trim()
-    if (!newRoomName){return;}
-
-    const newEditedRoom = {
-      name: newRoomName,
-      order_by_name: newRoomName.toLowerCase(),
-      key: this.state.roomToEdit.key
+    const editedRoom = {
+      name: this.state.editedRoomName.trim(),
+      order_by_name: this.state.editedRoomName.toLowerCase().trim(),
+      key: this.state.roomToEdit.uuid
     }
 
-     this.roomsRef.child(newEditedRoom.key)
-        .update({"name":newEditedRoom.name,
-        "order_by_name":newEditedRoom.order_by_name
+     this.roomsRef.child(editedRoom.key)
+        .update({"name":editedRoom.name,
+        "order_by_name":editedRoom.order_by_name
       })
 
-     const filtered = this.state.rooms.filter(room => room.key !== newEditedRoom.key);
-     this.setState({rooms: filtered.concat(newEditedRoom)})
+     const filtered = this.state.rooms.filter(room => room.key !== editedRoom.key);
+     this.setState({
+       rooms: filtered.concat(editedRoom),
+       editedRoomName: "",
+       roomToEdit: {}
+    })
   }
 
-  deleteRoom(room){
-     const newRooms = this.state.rooms.filter(r => r.key !== room.key)
-    
-     this.roomsRef.child(room.key).remove(function(error){
-       if (error){
-         console.log(error)
-         return false;
-       }
-     })
 
-     this.props.setActiveRoom(newRooms[0])
-     this.setState({ rooms : newRooms })
+  //talk to mentor about promises. This succeeds in testing.
+  deleteRoom(key) {
+    const newRooms = this.state.rooms.filter(rooms => rooms.key !== key)
+    this.roomsRef.child(key).remove(function (error) {
+      if (error) {
+        console.log(error + "This Failed")
+      }
+    }).then(() => { 
+      this.props.setActiveRoom(newRooms[0]) 
+    }).then(() => {
+      this.setState({ rooms: newRooms })
+    })
+
   }
 
   findRoomByName(roomName){
-    return this.state.rooms.find(room => roomName.toLowerCase() === room.name.toLowerCase())
+    return this.state.rooms.find(
+      room => roomName.toLowerCase() === room.name.toLowerCase()
+    );
   }
 
 
@@ -110,56 +123,70 @@ class RoomList extends Component {
     return (
 
       <div className="h-100">
-        <form onSubmit={e => this.createRoom(e)}>
 
-            <div className="input-group mb-3">
-              <input type="text"
-                className="form-control"
-                placeholder="Room Name"
-                aria-label="Room Name"
-                aria-describedby="button-roomname"
-                value={this.state.newRoomName}
-                onChange={e => this.handleRoomNameChange(e)}
-              />
-              <div className="input-group-append">
-                <input className="btn btn-primary" type="submit" id="button-roomname" value="NEW ROOM" />
-              </div>
-            </div>
-
-        </form>
+        <CreateRoom
+          newRoomName={this.state.newRoomName}
+          createRoom={e => this.createRoom(e)}
+          handleRoomNameCreate={e => this.handleRoomNameCreate(e)}
+        />
 
         {this.state.rooms.map((room) => {
-
-            return (
-
-              <div key={room.key}
-               className={room.key === this.props.activeRoom.key ? "nav-link active d-flex" : "nav-link d-flex"}>
-              
-                <div className="flex-grow-1" onClick={() => this.props.setActiveRoom(room)}>
+         
+          return (
+            <div
+              key={room.key}
+              className={
+                room.key === this.props.activeRoom.key
+                  ? "nav-link active d-flex"
+                  : "nav-link d-flex"
+              }
+              >
+                <div className="flex-grow-1" onClick={() => this.props.setActiveRoom(room)} >
                   {room.name}
                 </div>
 
-                <EditRoomName
-                  room={room}
-                  editedRoomName={this.state.editedRoomName}
-                  renameRoom={(room) => this.renameRoom(room)}
-                  handleEditRoomName={(room) => this.handleEditRoomName(room)}
-                  setRoomToEdit={(room) => this.setRoomToEdit(room)}
-                />
+                <ButtonToolbar>
+                  <DropdownButton
+                    drop="right"
+                    variant="secondary"
+                    title=<i className="fas fa-ellipsis-h"></i>
+                    id="messageMenuButton"
+                    key="messageMenuButton"
+                    className="message-menu room-menu"
+                  >
+                    <Dropdown.Item eventKey="1"></Dropdown.Item>
 
-                <DeleteRoom
-                  room={room}
-                  deleteRoom={(room) => this.deleteRoom(room)}
-                  setRoomToDelete={(room) => this.props.setRoomToDelete(room)}
-                />
-                
+                    <EditModal
+                      {...room}
+                      uuid={room.key}
+                      key="1"
+                      setObjectToEdit={room => this.setRoomToEdit(room)}
+                      midEditState={this.state.editedRoomName}
+                      handleMidEditState={room => this.handleMidEditRoomName(room)}
+                      commitEdit={room => this.renameRoom(room)}
+                      size="lg"
+                      objectType="room"
+                      trigger="Edit"
+                    />
 
-              </div>
-
-            )
+                    <Dropdown.Item eventKey="2">
+                      <DeleteModal
+                        {...room}
+                        uuid={room.key}
+                        key="2"
+                        trigger="Delete"
+                        size="lg"
+                        objectType="room"
+                        deleteObject={() => this.deleteRoom(room.key)}
+                      />
+                    </Dropdown.Item>
+                    
+                  </DropdownButton>
+              </ButtonToolbar>     
+                    
+            </div>
+          );
         })}
-       
-          
 
       </div>
     );
@@ -167,16 +194,43 @@ class RoomList extends Component {
 }
 
 export default RoomList;
-// <DeleteRoom
-//             activeRoom={this.props.activeRoom.key}
-//             deleteRoom={() => this.deleteRoom()}
-//           />
 
-// <div className="float-right px-3">
-// <i className={room.key === this.props.activeRoom.key ? "fas fa-pencil-alt active" : "fas"}></i>
+// <DeleteRoom
+// room={room}
+// deleteRoom={room => this.deleteRoom(room)}
+// setRoomToDelete={room => this.props.setRoomToDelete(room)}
+// />
 // </div>
 
-// <i className={room.key === this.props.activeRoom.key ? "fas fa-trash-alt active" : "fas"}></i>
-// <i className="fas fa-pencil-alt" onClick={() => this.setRoomToEdit(room)}></i>
+// <EditRoomName
+// room={room}
+// editedRoomName={this.state.editedRoomName}
+// renameRoom={room => this.renameRoom(room)}
+// handleEditRoomName={room => this.handleEditRoomName(room)}
+// setRoomToEdit={room => this.setRoomToEdit(room)}
+// />
 
 
+
+// <EditRoomName
+// {...room}
+// uuid={room.key}
+// key="1"
+// editedState={this.state.editedRoomName}
+// commitEdit={room => this.renameRoom(room)}
+// handleEditedState={room => this.handleEditRoomName(room)}
+// setObjectToEdit={room => this.setRoomToEdit(room)}
+// size="lg"
+// objectType="room"
+// trigger="Edit"
+// />
+
+// <DeleteModal
+// {...room}
+// uuid={room.key}
+// key="2"
+// trigger=<i className="fas fa-trash-alt"></i>
+// size="lg"
+// objectType="room"
+// deleteObject={() => this.deleteRoom(room.key)}
+// />
