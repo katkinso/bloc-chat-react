@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import RoomList from './components/RoomList';
-import MessageList from './components/MessageList';
+import Rooms from './components/Rooms';
+import Messages from './components/Messages';
 import User from './components/User';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './config';
@@ -61,7 +61,7 @@ class App extends Component {
 
       <div className="d-flex flex-row h-100">
         <div className="left-nav h-100 px-3 py-3">
-          <RoomList
+          <Rooms
             firebase={firebase}
             activeRoom={this.state.activeRoom}
             setActiveRoom={(room) => this.setActiveRoom(room)}
@@ -74,7 +74,7 @@ class App extends Component {
             userInfo={this.state.userInfo}
             setUserInfo={(user) => this.setUserInfo(user)}
           />
-          <MessageList
+          <Messages
             roomToDelete={this.state.roomToDelete}
             firebase={firebase}
             activeRoom={this.state.activeRoom}
