@@ -4,6 +4,8 @@ import Messages from './components/Messages';
 import User from './components/User';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './config';
+import { subscribeToTimer } from './components/api';
+
 firebase.initializeApp(firebaseConfig);
 
 
@@ -18,14 +20,20 @@ class App extends Component {
       isLoggedIn: false
     }
 
+    this.roomsRef = firebase.database().ref("rooms");
+    this.initalizeRoom();
+
+    subscribeToTimer((err, timestamp) => this.setState({ 
+      timestamp 
+    }));
+
+
     this.state = {
       activeRoom: {},
       roomToDelete: {},
-      userInfo: this.defaultUserInfo
+      userInfo: this.defaultUserInfo,
+      timestamp: 'no timestamp yet'
     };
-
-    this.roomsRef = firebase.database().ref("rooms");
-    this.initalizeRoom();
   }
 
   initalizeRoom() {
@@ -79,6 +87,7 @@ class App extends Component {
             firebase={firebase}
             activeRoom={this.state.activeRoom}
             userInfo={this.state.userInfo}
+            timer={this.state.timestamp}
           />
         </div>
       </div>

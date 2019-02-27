@@ -5,6 +5,8 @@ import EditModal from "./EditModal";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
+import { getTypingUsers } from './api';
+
 
 import { convertDateTime } from "../utils/utils";
 
@@ -23,18 +25,25 @@ class Messages extends Component {
       },
       editedMessage: "",
       messageToEdit: {},
-      textareaHeight: 100
+      textareaHeight: 100,
+      typingUsers: ''
     };
+
+    getTypingUsers((err,user) => {
+      this.setState({typingUsers : user})
+    })
 
     this.messagesRef = this.props.firebase.database().ref("messages");
   }
 
   componentDidMount() {
+
     this.messagesRef.orderByChild("key").on("child_added", snapshot => {
       const message = snapshot.val();
       message.key = snapshot.key;
       this.setState({ messages: this.state.messages.concat(message) });
     });
+
   }
 
   setMessage(e) {
@@ -52,6 +61,11 @@ class Messages extends Component {
       username: this.props.userInfo.displayName,
       key: ""
     };
+   
+    getTypingUsers((err,user) => {
+      this.setState({typingUsers : user})
+    },newMessage.username)
+
 
     this.setState({ newMessage: newMessage });
   }
@@ -123,6 +137,7 @@ class Messages extends Component {
       messageToEdit: {},
       textareaHeight: 100
     });
+
   }
 
   handleMidEditState(message) {
@@ -216,6 +231,12 @@ class Messages extends Component {
               <hr className="hr-light" />
             </div>
           ))}
+
+          {this.state.typingUsers &&         
+            <p className="text-message-time">{this.state.typingUsers} is typing</p>
+          } 
+        
+
 
         <SendMessage
           firebase={this.props.firebase}

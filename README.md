@@ -1,5 +1,26 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+##KA Notes
+
+###To Run the Client Side App
+
+To auto build Sass run:`npm run scss`
+
+To run the app run: `npm start`
+Runs the app in the development mode.
+Open http://localhost:3000 to view it in the browser.
+
+The page will reload if you make edits and you will also see any lint errors in the console.
+
+###To Run the Server 
+Running the server will allow you to see real time typing in the UI.
+
+To run the server run `node server`
+
+
+------------------------
+
+
 ## Available Scripts
 
 In the project directory, you can run:
